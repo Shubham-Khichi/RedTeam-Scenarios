@@ -9,6 +9,7 @@ Remember, security is a serious business. If you're not sure about something, al
 
 Stay safe, stay ethical, and happy exploring!
 
+### Epic Repo: Ultimate DevSecOps Library: https://github.com/sottlmarek/DevSecOps
 
 ## Contribution rules
 If you want to contribute to this library of knowledge please create proper PR (Pull Request) with description what you are adding following these set of rules: 
