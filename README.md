@@ -24,7 +24,7 @@ _Note:_ Currently this is an early version of the library. I recommend PR after 
 
 **RedTeam_Scenarios library info:** 
 
-![stars](https://img.shields.io/github/stars/Ghostyboy0719/RedTeam_Scenarios?style=for-the-badge)
+![stars](https://img.shields.io/github/stars/Ghostyboy0719/RedTeam-Scenarios?style=for-the-badge)
 ![watchers](https://img.shields.io/github/watchers/Ghostyboy0719/RedTeam_Scenarios?color=green&style=for-the-badge) 
 ![watchers](https://img.shields.io/github/forks/Ghostyboy0719/RedTeam_Scenarios?color=orange&style=for-the-badge)
 
