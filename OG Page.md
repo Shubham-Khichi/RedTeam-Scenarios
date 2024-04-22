@@ -1322,5 +1322,5 @@ _Note:_ Currently this is an early version of the library. I recommend PR after 
 
 # License
 
-MIT License
+Apache License
 Shubham Khichi (c) 2024
