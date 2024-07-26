@@ -58,124 +58,254 @@ Investigate what sensitive information a standard user can access, focusing on p
 - [License](#license)
 
 
-# Internal Network
+# Internal-Network
+
+## 1. Prerequisites
+
+- Obtain necessary approvals and signed agreements from leadership, this can include directors, CISOs and other security team owners like SOC(monitoring), IR(response), SysOps(when you bring down a server). 
+- Set up isolated testing environment mirroring production
+  - Tool: [DockerSecurityPlayground](https://github.com/DockerSecurityPlayground/DSP) for creating isolated network environments
+- Prepare testing accounts with standard user privileges
+- Ensure all tools are vetted, approved, and properly licensed - This includes any opensource tools which you use, remember "Don't Be The Inside Threat Actor, by Accident". Get your tools ready in advance and not during an engagement. 
+- Establish secure communication channels for the red team
+  - Tool: [CryptoChat](https://github.com/AsamK/signal-cli) (Signal CLI client) for encrypted communications. If secure comms is not something you are practicing(which I think you should), You should use a teams/slack channel called **#IsThisTheRedTeam?** .The purpose of this channel will be to communicate red team efforts, timelines and scope. Be extremely transparent and involve all the above stakeholders because these scenarios are not focused on stealth operations which makes you go undetected for weeks. You have to mature and build trust to reach that position.
+- Create data collection and reporting templates
+  - Tool: [Ghostwriter](https://github.com/GhostManager/Ghostwriter) for report templates and project management, if that doesnt work then use a tool to collect all your information, have a person dedicated in your red team to keep everyone accountable, this can be the junior most person because if your technical documentation can make that junior person understand and replicate, you have succeeded. Also one more thing to consider is to use internal github repo for all the scrips which you generate during an engagement. You can always recycle them in the next engagement. 
+- Conduct pre-engagement briefing with all team members - This is game plan talk, have an initial briefing with your colleagues and once everyone is on the same page, have a second briefing with all your stakeholders who will help you be successful. 
+
+## 2. Stakeholder Notification
+
+- Chief Information Security Officer (CISO)
+- Chief Information Officer (CIO)
+- IT Operations Manager
+- Network Security Team Lead (NOC if you have one)
+- GRC Compliance Officer (This is optional at this stage but down the road yes)
+- Legal Department Representative (Not Necessary, but maybe you are a bank)
+
+## 3. Rules of Engagement (ROE) Key Points
+
+- Scope: Clearly define target systems and networks - Have all your data in hand or on a mind map. I personally use [Eraser.io](https://eraser.io) but if you are concerned about privacy then use [Excalidraw for Obsedian](https://publish.obsidian.md/hub/02+-+Community+Expansions/02.05+All+Community+Expansions/Plugins/obsidian-excalidraw-plugin)
+- Timeline: Specify start and end dates - Best way is to break it down into a **POC(Proof of concept)** deadline and **Core Work** deadline. In POC you are to just do a atomic tests in each scenario to understand how network reacts to your tests. Once you have confidence on your tooling and the testing grounds you can move to Core Work Deadline. #Operation Duration Estimate below is only an estimate.
+- Authorized Tools: List of approved tools and techniques
+  - Include all tools mentioned in this document, more if you have them.
+- Restrictions: Systems/data off-limits, actions not permitted
+  - Explicitly state no customer data should be exfiltrated
+- Data Handling: Procedures for sensitive data encountered
+  - Use [git-crypt](https://github.com/AGWA/git-crypt) for encrypting sensitive files in repositories
+- Reporting: Frequency and format of status updates
+- Incident Response: Protocol if critical vulnerabilities are found
+  - Define severity levels and corresponding response times
+- Communication Plan: Points of contact and escalation procedures
+- Safety Measures: Steps to prevent disruption to business operations
+  - Include rollback procedures for each test, have the ability to document what you have done, incorporate SOC and their advance tooling to give you artifacts. 
+
+## 4. Operation Duration Estimate
+
+- Preparation Phase: 1-2 weeks
+- POC Testing Phase(atomic testing only): 1 week
+- Core Work Phase(All scenarios): 3 weeks
+- Analysis and Reporting: 1-2 weeks
+- Total Estimated Duration: 6-8 weeks
+
+## Scenarios
 1. **Standard User Data Access Assessment**  
    Investigate what sensitive information a standard user can access, focusing on potential data leaks or unauthorized access to confidential information.  
-   - *Tool*: LinEnum  
+   - *Tool*: LinEnum, [LinPEAS](https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS) (more comprehensive than LinEnum)
    - *Description*: Run LinEnum for assessing what data and system functionalities are accessible with standard user privileges.
+   - *End Objective*: Map Out Accessible Data, Find out what sensitive information a regular employee can see or access.
 
 2. **User Privilege Escalation Techniques**  
    Evaluate common methods for escalating privileges from a standard user to higher levels, using widely known exploits or misconfigurations.  
-   - *Tool*: BeRoot  
+   - *Tool*: BeRoot, [WESNG](https://github.com/bitsadmin/wesng) (Windows Exploit Suggester - Next Generation)
    - *Description*: Utilize BeRoot on Linux/Windows systems to find common privilege escalation vulnerabilities.
+   - *End Objective*: Escalate User Privileges, Discover ways a standard user account could gain more powerful access rights.
 
 3. **Service Privilege Escalation Techniques**  
    Find out a way to elevate the privilege of a standard service account to root/admin account and identify what else can be exploited post-escalation.
+   - *Tool*: [PrivescCheck](https://github.com/itm4n/PrivescCheck) for Windows
+   - *End Objective*: Elevate Service Account Privileges, Identify methods to increase the power of service accounts to admin level.
 
-4. **Unauthorized Software Installation Check**  
+5. **Unauthorized Software Installation Check**  
    Test the ability of a standard user to install unauthorized software, indicating potential weaknesses in software restriction policies.  
-   - *Tool*: Custom scripts  
+   - *Tool*: Custom scripts, [Infection Monkey](https://github.com/guardicore/monkey) to test software installation and propagation
    - *Description*: Write and execute scripts to test if a user can bypass software installation restrictions.
+   - *End Objective*: Test Software Installation Controls, Determine if regular users can install unauthorized programs.
 
-5. **User Role Boundaries Effectiveness**  
+6. **User Role Boundaries Effectiveness**  
    Examine the enforcement and effectiveness of user role boundaries to identify any excessive permissions or role misconfigurations.  
-   - *Tool*: BloodHound  
+   - *Tool*: [BloodHound](https://github.com/BloodHoundAD/BloodHound)
    - *Description*: Employ BloodHound to analyze and visualize user role boundaries and permissions in the network.
+   - *End Objective*: Check User Role Effectiveness, Evaluate how well the system keeps users within their assigned roles and access levels.
 
-6. **Internal Software Vulnerability Scan**  
+7. **Internal Software Vulnerability Scan**  
    Conduct vulnerability scanning on internal software or services to identify potential exploits or weaknesses.  
-   - *Tool*: Qualys  
+   - *Tool*: Qualys, [Nuclei](https://github.com/projectdiscovery/nuclei) for vulnerability scanning
    - *Description*: Conduct vulnerability assessments using OpenVAS on internal applications and services.
+   - *End Objective*: Uncover Internal Software Weaknesses, Find and document vulnerabilities in the company's internal software.
 
-7. **Password Management and Storage Security**  
+8. **Password Management and Storage Security**  
    Assess the security of password management and storage, including attempts to extract stored passwords or keychain data.  
-   - *Tool*: John the Ripper  
+   - *Tool*: John the Ripper, [LaZagne](https://github.com/AlessandroZ/LaZagne) for password recovery 
    - *Description*: Test the strength of stored passwords using John the Ripper.
+   - *End Objective*: Assess Password Security, Evaluate how well passwords are protected and stored within the system.
 
-8. **Network Services Mapping**  
+9. **Network Services Mapping**  
    Perform a network scan to map out services running within the network, focusing on identifying unprotected services or those with known vulnerabilities.  
-   - *Tool*: Nmap  
+   - *Tool*: Nmap, [RustScan](https://github.com/RustScan/RustScan) (faster initial scanning than Nmap)  
    - *Description*: Utilize Nmap for detailed network mapping and service identification.
+   - *End Objective*: Create a Network Service Map, Build a comprehensive picture of all services running on the internal network.
 
-9. **Sensitive File Access via Standard User Account**  
+10. **Sensitive File Access via Standard User Account**  
    Test access to sensitive files from a standard user account on a shared system, such as a Windows machine, to assess file-sharing security.  
-   - *Tools*: Accesschk, Snaffler  
+   - *Tools*: Accesschk, [Snaffler](https://github.com/SnaffCon/Snaffler) for Windows 
    - *Description*: Use Accesschk to assess what files a standard user can access on Windows systems.
+   - *End Objective*: Test File Access Controls, Determine what sensitive files a standard user can access on shared systems.
 
-10. **Network Traffic Sniffing for Data Leakage**  
+11. **Network Traffic Sniffing for Data Leakage**  
     Use network sniffing tools to identify if sensitive data, such as credentials, can be captured from network traffic.  
-    - *Tools*: Wireshark, Responder, Inveigh  
+    - *Tools*: Wireshark, Responder, Inveigh, [PCredz](https://github.com/lgandx/PCredz) for credential sniffing
     - *Description*: Employ Wireshark for capturing and analyzing network traffic to detect data leaks.
+    - *End Objective*: Detect Data Leaks in Network Traffic, Identify any sensitive information that can be captured from network communications.
 
-11. **Internal Reconnaissance and Asset Identification**  
-    Conduct internal reconnaissance to identify critical assets and services running within the network.  
-    - *Tool*: Nmap  
-    - *Description*: Conduct network reconnaissance using Nmap to identify critical assets.
+12. **Internal Reconnaissance and Asset Identification**  
+Conduct internal reconnaissance to identify critical assets and services running within the network.  
+- *Tools*: 
+  - [Nmap](https://github.com/nmap/nmap) for network scanning
+  - [Angry IP Scanner](https://github.com/angryip/ipscan) for quick IP and port scanning
+  - [Masscan](https://github.com/robertdavidgraham/masscan) for large-scale, rapid port scanning
+  - [Rust Scan](https://github.com/RustScan/RustScan) for faster initial scanning
+- *Description*: Use a combination of tools to conduct thorough network reconnaissance and identify critical assets.  
+- *End Objective*: Create a comprehensive inventory of network assets and services for targeted testing.
 
-12. **Wireless Network Penetration Test**  
-    Evaluate the security of internal wireless networks, focusing on weak encryption, poor authentication methods, and rogue access points.  
-    - *Tool*: Aircrack-ng  
-    - *Description*: Test wireless network security using Aircrack-ng.
+13. **Wireless Network Penetration Test**  
+Evaluate the security of internal wireless networks, focusing on weak encryption, poor authentication methods, and rogue access points.  
+- *Tools*: 
+  - [Aircrack-ng](https://github.com/aircrack-ng/aircrack-ng) for wireless network security testing
+  - [Kismet](https://github.com/kismetwireless/kismet) for wireless network detection and sniffing
+  - [Wifite](https://github.com/derv82/wifite2) for automated wireless attacks
+  - [Fern Wifi Cracker](https://github.com/savio-code/fern-wifi-cracker) for GUI-based wireless security auditing
+- *Description*: Utilize multiple tools to test various aspects of wireless network security.  
+- *End Objective*: Identify vulnerabilities in wireless network infrastructure and recommend security enhancements.
 
-13. **Phishing Simulation Against Employees**  
-    Run a controlled phishing campaign to assess employee awareness and susceptibility to social engineering attacks.  
-    - *Tool*: Gophish  
-    - *Description*: Run phishing simulations with Gophish to assess employee security awareness.
+14. **Phishing Simulation Against Employees**  
+Run a controlled phishing campaign to assess employee awareness and susceptibility to social engineering attacks.  
+- *Tools*: 
+  - [Gophish](https://github.com/gophish/gophish) for phishing campaigns
+  - [King Phisher](https://github.com/rsmusllp/king-phisher) for more advanced phishing scenarios
+  - [SocialFish](https://github.com/UndeadSec/SocialFish) for social media phishing tests
+  - [Evilginx2](https://github.com/kgretzky/evilginx2) for advanced phishing attacks with 2FA bypass
+- *Description*: Conduct various types of phishing simulations to comprehensively assess employee security awareness.  
+- *End Objective*: Evaluate and improve employee resilience against social engineering attacks.
 
-14. **Remote Access Vulnerabilities Assessment**  
-    Examine the security of remote access points, including VPNs, for potential vulnerabilities and unauthorized access risks.  
-    - *Tool*: Nmap  
-    - *Description*: Evaluate remote access points for vulnerabilities using Nmap.
+15. **Remote Access Vulnerabilities Assessment**  
+Examine the security of remote access points, including VPNs, for potential vulnerabilities and unauthorized access risks.  
+- *Tools*: 
+  - [OpenVAS](https://github.com/greenbone/openvas-scanner) for vulnerability scanning
+  - [Nmap](https://github.com/nmap/nmap) for port and service discovery
+  - [SSLyze](https://github.com/nabla-c0d3/sslyze) for SSL/TLS configuration analysis
+  - [ike-scan](https://github.com/royhills/ike-scan) for IKE/IPsec VPN testing
+- *Description*: Use a variety of tools to evaluate remote access points for vulnerabilities and misconfigurations.  
+- *End Objective*: Identify and mitigate vulnerabilities in remote access infrastructure.
 
-15. **Physical Security Check for Network Access**  
-    Test physical security measures to assess the risk of unauthorized individuals gaining network access from within the premises.  
-    - *Tools*: Physical inspection and testing  
-    - *Description*: Conduct physical security testing to assess network access controls.
+16. **Physical Security Check for Network Access**  
+Test physical security measures to assess the risk of unauthorized individuals gaining network access from within the premises.  
+- *Tools*: 
+  - [LAN Turtle](https://shop.hak5.org/products/lan-turtle) for covert network access (hardware tool)
+  - [Raspberry Pi](https://www.raspberrypi.org/) with custom scripts for network probing
+  - [WiFi Pineapple](https://shop.hak5.org/products/wifi-pineapple) for wireless network auditing (hardware tool)
+  - [P4wnP1 A.L.O.A](https://github.com/RoganDawes/P4wnP1_aloa) for USB attack platform
+- *Description*: Utilize both hardware and software tools to test physical security controls and potential for unauthorized access.  
+- *End Objective*: Identify physical security weaknesses that could lead to unauthorized network access.
 
-16. **Segmentation and Lateral Movement Test**  
-    Evaluate network segmentation and controls preventing lateral movement within the network.  
-    - *Tool*: BloodHound  
-    - *Description*: Analyze network segmentation and test for lateral movement opportunities using BloodHound.
+17. **Segmentation and Lateral Movement Test**  
+Evaluate network segmentation and controls preventing lateral movement within the network.  
+- *Tools*: 
+  - [BloodHound](https://github.com/BloodHoundAD/BloodHound) for Active Directory attack paths
+  - [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec) for network lateral movement testing
+  - [Impacket](https://github.com/SecureAuthCorp/impacket) for various network protocol attacks
+  - [Metasploit Framework](https://github.com/rapid7/metasploit-framework) for exploitation and post-exploitation
+- *Description*: Use multiple tools to analyze network segmentation and test for lateral movement opportunities.  
+- *End Objective*: Assess the effectiveness of network segmentation and identify potential paths for lateral movement.
 
-17. **Incident Response Efficacy Test**  
-    Simulate an attack to assess the effectiveness of the incident response team and monitoring systems in detecting and responding to breaches.  
-    - *Tools*: Simulated attack scenarios  
-    - *Description*: Simulate attacks and monitor the incident response team's actions.
+18. **Incident Response Efficacy Test**  
+Simulate an attack to assess the effectiveness of the incident response team and monitoring systems in detecting and responding to breaches.  
+- *Tools*: 
+  - [Atomic Red Team](https://github.com/redcanaryco/atomic-red-team) for simulating attack techniques
+  - [Caldera](https://github.com/mitre/caldera) for automated adversary emulation
+  - [Infection Monkey](https://github.com/guardicore/monkey) for breach and attack simulation
+  - [PurpleSharp](https://github.com/mvelazc0/PurpleSharp) for simulating adversary techniques
+- *Description*: Use various adversary simulation tools to test incident response capabilities.  
+- *End Objective*: Evaluate and improve the organization's incident detection and response capabilities.
 
-18. **Email System Security Assessment**  
-    Test email systems for vulnerabilities like spam filtering effectiveness and susceptibility to malware.  
-    - *Tool*: MailTester  
-    - *Description*: Use MailTester to evaluate the security of email systems, including spam and malware filtering.
+19. **Email System Security Assessment**  
+Test email systems for vulnerabilities like spam filtering effectiveness and susceptibility to malware.  
+- *Tools*: 
+  - [Gophish](https://github.com/gophish/gophish) for email phishing tests
+  - [SwakSender](https://github.com/crunchsec/swaksender) for email header manipulation
+  - [SPF Toolset](https://github.com/jcran/spf-tools) for SPF record testing
+  - [DKIM Verifier](https://github.com/dmarcaas/dkim-verifier) for DKIM validation
+- *Description*: Utilize various tools to test different aspects of email security, including filters and protocols.  
+- *End Objective*: Identify vulnerabilities in email systems and improve email security posture.
 
-19. **User Account Enumeration and Reconnaissance**  
-    Attempt to enumerate user accounts and gather information on network users and their privileges.  
-    - *Tool*: BloodHound  
-    - *Description*: Use BloodHound for in-depth user account enumeration and network reconnaissance.
+20. **User Account Enumeration and Reconnaissance**  
+Attempt to enumerate user accounts and gather information on network users and their privileges.  
+- *Tools*: 
+  - [BloodHound](https://github.com/BloodHoundAD/BloodHound) for Active Directory analysis
+  - [Enum4linux](https://github.com/CiscoCXSecurity/enum4linux) for Windows/Samba systems enumeration
+  - [LdapDomainDump](https://github.com/dirkjanm/ldapdomaindump) for LDAP-based enumeration
+  - [ADRecon](https://github.com/sense-of-security/ADRecon) for Active Directory recon
+- *Description*: Use multiple tools to enumerate and analyze user accounts, permissions, and network structure.  
+- *End Objective*: Map out user accounts, privileges, and potential paths for privilege escalation.
 
-20. **Endpoint Security Evaluation**  
-    Assess the security of end-user devices, focusing on antivirus effectiveness, patch levels, and endpoint protection measures.  
-    - *Tool*: Nessus  
-    - *Description*: Use Nessus to evaluate endpoint security and identify potential vulnerabilities.
+21. **Endpoint Security Evaluation**  
+Assess the security of end-user devices, focusing on antivirus effectiveness, patch levels, and endpoint protection measures.  
+- *Tools*: 
+  - [OpenVAS](https://github.com/greenbone/openvas-scanner) for vulnerability scanning
+  - [Nessus](https://www.tenable.com/products/nessus) for comprehensive vulnerability assessment (commercial)
+  - [OWASP ZAP](https://github.com/zaproxy/zaproxy) for web application security scanning
+  - [Lynis](https://github.com/CISOfy/lynis) for security auditing on Unix-based systems
+- *Description*: Employ a range of tools to evaluate endpoint security from different perspectives.  
+- *End Objective*: Identify weaknesses in endpoint security and recommend improvements.
 
-21. **Database Security and Access Controls Test**  
-    Evaluate the security of internal databases, focusing on access controls, data encryption, and SQL injection vulnerabilities.  
-    - *Tool*: Sqlmap  
-    - *Description*: Assess database security, particularly for SQL injection vulnerabilities, using Sqlmap.
+22. **Database Security and Access Controls Test**  
+Evaluate the security of internal databases, focusing on access controls, data encryption, and SQL injection vulnerabilities.  
+- *Tools*: 
+  - [SQLmap](https://github.com/sqlmapproject/sqlmap) for automated SQL injection
+  - [NoSQLMap](https://github.com/codingo/NoSQLMap) for NoSQL database security assessment
+  - [ODAT](https://github.com/quentinhardy/odat) for Oracle database attacking tool
+  - [Metasploit](https://github.com/rapid7/metasploit-framework) for various database exploits
+- *Description*: Use specialized tools to assess different types of databases for various security vulnerabilities.  
+- *End Objective*: Identify and address vulnerabilities in database systems and access controls.
 
-22. **Hostname Discovery**  
-    Discover internal hostnames and assets on network via LLMNR/NBT-NS Poisoning.  
-    - *Tools*: Responder, Inveigh  
-    - *Description*: Once on the internal network, listen on all interfaces.
+23. **Hostname Discovery**  
+Discover internal hostnames and assets on network via LLMNR/NBT-NS Poisoning.  
+- *Tools*: 
+  - [Responder](https://github.com/lgandx/Responder) for LLMNR, NBT-NS and MDNS poisoning
+  - [Inveigh](https://github.com/Kevin-Robertson/Inveigh) for Windows-based LLMNR/NBNS spoofing
+  - [Nmap](https://github.com/nmap/nmap) with NSE scripts for hostname discovery
+  - [DNSRecon](https://github.com/darkoperator/dnsrecon) for DNS enumeration
+- *Description*: Utilize various tools to discover hostnames through different network protocols and techniques.  
+- *End Objective*: Identify potential vulnerabilities in name resolution protocols and discover network assets.
 
-23. **Identifying Application Stack Vulnerabilities across the entire corporate network**  
-    Check the high and critical severity vulnerabilities with Nuclei.  
-    - *Tool*: Nuclei  
-    - *Description*: Run Nuclei to check high and critical severity vulnerabilities in the corp network IP ranges.
+24. **Identifying Application Stack Vulnerabilities across the entire corporate network**  
+Check the high and critical severity vulnerabilities with automated scanning tools.  
+- *Tools*: 
+  - [Nuclei](https://github.com/projectdiscovery/nuclei) for vulnerability scanning
+  - [Nessus](https://www.tenable.com/products/nessus) for comprehensive vulnerability assessment (commercial)
+  - [OpenVAS](https://github.com/greenbone/openvas-scanner) for open-source vulnerability scanning
+  - [Acunetix](https://www.acunetix.com/) for web application vulnerability scanning (commercial)
+- *Description*: Run automated scans to check for high and critical severity vulnerabilities in the corporate network IP ranges.  
+- *End Objective*: Identify and prioritize critical vulnerabilities across the corporate application stack.
 
-24. **Debug Ports Open**  
-    Check whether high-numbered developer debug ports are open that also allow RCE.  
-    - *Tools*: Nmap, Ncat  
-    - *Description*: Service scan with Nmap on all ports; interact with service via Ncat.
+25. **Debug Ports Open**  
+Check whether high-numbered developer debug ports are open that also allow RCE.  
+- *Tools*: 
+  - [Nmap](https://github.com/nmap/nmap) for port scanning
+  - [Masscan](https://github.com/robertdavidgraham/masscan) for rapid port scanning
+  - [Ncat](https://github.com/nmap/nmap/tree/master/ncat) for service interaction
+  - [Metasploit](https://github.com/rapid7/metasploit-framework) for exploitation of open ports
+- *Description*: Perform comprehensive port scans to identify open debug ports and test for potential remote code execution.  
+- *End Objective*: Identify and secure open debug ports that could lead to remote code execution.
    
 # Github
 
